@@ -13,7 +13,7 @@ router.get('/', usersController.getUsers);
 router.post(
   '/signup',
   [
-    validator.check('name').not().isEmpty(),
+    validator.check('name').not().isEmpty(), //Validacao com express
     validator.check('email').normalizeEmail().isEmail(),
     validator.check('password').not().isEmpty(),
   ],
