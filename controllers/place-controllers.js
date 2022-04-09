@@ -3,6 +3,9 @@ const HttpError = require('../models/http-error');
 const uuid = require('uuid');
 const { validationResult } = require('express-validator');
 
+//Importação schema mongo (Template place - Olhar o export):
+const Place = require('../models/place');
+
 let DUMMY_PLACES = [
   {
     id: 'p1',
@@ -18,86 +21,108 @@ let DUMMY_PLACES = [
 ];
 
 //LOGICA PARA BUSCAR LUGARES PELO ID DO LUGAR
-const getPlaceById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   //pid -> ID do place.
   const placeID = req.params.places_id; //Vai puxar o ramatro PID da url para pegar o id e dar um selec tno bd
-  const place_select = DUMMY_PLACES.find((p) => {
-    return p.id === placeID;
-  }); //Proura esse ID no array
 
-  if (!place_select) {
-    throw new HttpError('Could not find a place for the provided !', 404);
+  let place;
+  //GET MONGO DB:
+  try {
+    place = await Place.findById(placeID).exec();
+  } catch (error) {
+    console.log(error);
   }
 
-  res.json({ place_select });
+  if (!place || place.length === 0) {
+    return next(
+      new HttpError('Could not find a place for the provided !', 404),
+    );
+  }
+
+  res.json({ place: place.toObject({ getters: true }) });
 };
 
 //LOGICA PARA BUSCAR LUGARES PELO USER ID
-const getPlacesByUserId = (req, res, next) => {
-  const userID = req.params.user_id; //Vai puxar o ramatro PID da url para pegar o id e dar um selec tno bd
-  const places_select = DUMMY_PLACES.filter((p) => {
-    return p.creator === userID;
-  });
-  if (!places_select || places_select.length === 0) {
+const getPlacesByUserId = async (req, res, next) => {
+  const userID = req.params.user_id; //Vai puxar o parametro PID da url para pegar o id e dar um select no bd
+
+  let places;
+  //SELECT NO MONGO BUSCANDO O ID DO USER
+  try {
+    places = await Place.find({ creator: userID });
+  } catch (err) {
+    console.log(err);
+  }
+
+  if (!places || places.length === 0) {
     next(new HttpError('Could not find a place for the provided !', 404));
   } else {
-    res.json({ places_select });
+    res.json({
+      places: places.map((place) => place.toObject({ getters: true })),
+    });
   }
 };
 
-//POST place:
-const createPlace = (req, res, next) => {
+//POST place WITH MONGODB:
+const createPlace = async (req, res, next) => {
   const errors = validationResult(req); //validação do express
   if (!errors.isEmpty()) {
     throw new HttpError('Invalid input passed pleasse check your data', 422);
   }
-  const { title, description, coordinates, address, creator } = req.body; //Puxar esses campos do body
-  const createdPlace = {
-    id: uuid.v4(),
+  const { title, description, coordinates, address, creator } = req.body; //Puxar esses campos do body -> POST MONGO
+  const createdPlace = new Place({
     title,
     description,
-    location: coordinates,
     address,
+    location: coordinates,
     creator,
-  };
+  });
 
-  DUMMY_PLACES.push(createdPlace); //unshift(createdPlace)
+  try {
+    await createdPlace.save();
+  } catch (err) {
+    console.log(err);
+  }
 
   res.status(201).json({ place: createdPlace });
 };
 
 //Update:
 
-const updatePlace = (req, res, next) => {
-  const errors = validationResult(req); //validação do express
-  if (!errors.isEmpty()) {
-    throw new HttpError('Invalid input asdas pleasse check your data', 422);
-  }
-  const { title, description } = req.body; //Puxar esses campos do body da requisicao
-  const placeId = req.params.places_id;
-  const updatedPlace = {
-    ...DUMMY_PLACES.find((p) => {
-      return p.id === placeId;
-    }),
+const updatePlace = async (req, res, next) => {
+  const { title, description } = req.body;
+  const placeId = req.params.pid;
+
+  const teste = {
+    title,
+    description,
   };
-
-  const placeIndex = DUMMY_PLACES.findIndex((p) => p.id === placeId);
-
-  updatedPlace.title = title;
-  updatedPlace.description = description;
-  DUMMY_PLACES[placeIndex] = updatedPlace; //Trocar pelo objeto updatePlaces (no index correto)
-
-  res.status(200).json({ place: updatedPlace });
+  try {
+    const update_place = await Place.updateOne({ _id: placeId }, teste);
+    res.status(200).json(update_place);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 //Delete:
 
-const deletePlace = (req, res, next) => {
+const deletePlace = async (req, res, next) => {
   const placeId = req.params.places_id;
-  if (!DUMMY_PLACES.find((p) => p.id === placeId)) {
-    throw new HttpError('Could not find a place for that id', 404);
+
+  let place;
+
+  try {
+    place = await Place.findById(placeId);
+  } catch (err) {
+    console.log(err);
   }
-  DUMMY_PLACES = DUMMY_PLACES.filter((p) => p.id !== placeId);
+
+  try {
+    await place.remove();
+  } catch (err) {
+    console.log(err);
+  }
   res.status(200).json({ message: 'Deleted place.' });
 };
 

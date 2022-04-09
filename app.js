@@ -6,6 +6,9 @@ const userRoutes = require('./routes/users-routes');
 const app = express();
 const HttpError = require('./models/http-error');
 
+//MongoConfig:
+const mongoose = require('mongoose');
+
 //POST
 app.use(bodyParser.json());
 
@@ -28,4 +31,14 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
-app.listen(5000);
+//Conexão mongo:
+mongoose
+  .connect(
+    'mongodb+srv://jvccorsi:jvccorsi145@cluster0.u581t.mongodb.net/TccDatabase?retryWrites=true&w=majority',
+  )
+  .then(() => {
+    app.listen(5000);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
