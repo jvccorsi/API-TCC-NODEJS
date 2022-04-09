@@ -4,7 +4,7 @@ const uuid = require('uuid');
 const { validationResult } = require('express-validator');
 
 //Importação schema mongo (Template place - Olhar o export):
-const Place = require('../models/place');
+const Place = require('../models/Schemas/place');
 
 //LOGICA PARA BUSCAR LUGARES PELO ID DO LUGAR
 const getPlaceById = async (req, res, next) => {
@@ -50,7 +50,7 @@ const getPlacesByUserId = async (req, res, next) => {
 };
 
 //POST place WITH MONGODB:
-const createPlace = async (req, res, next) => {
+const createPlace = async (req, res) => {
   const errors = validationResult(req); //validação do express
   if (!errors.isEmpty()) {
     throw new HttpError('Invalid input passed pleasse check your data', 422);
