@@ -6,20 +6,6 @@ const { validationResult } = require('express-validator');
 //Importação schema mongo (Template place - Olhar o export):
 const Place = require('../models/place');
 
-let DUMMY_PLACES = [
-  {
-    id: 'p1',
-    title: 'Empire State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: '20 W 34th St, New York, NY 10001',
-    creator: 'u1',
-  },
-];
-
 //LOGICA PARA BUSCAR LUGARES PELO ID DO LUGAR
 const getPlaceById = async (req, res, next) => {
   //pid -> ID do place.
@@ -89,20 +75,19 @@ const createPlace = async (req, res, next) => {
 
 //Update:
 
-const updatePlace = async (req, res, next) => {
-  const { title, description } = req.body;
-  const placeId = req.params.pid;
-
-  const teste = {
-    title,
-    description,
-  };
+const updatePlace = async (req, res) => {
+  const placeID = req.params.places_id; //Vai puxar o ramatro PID da url para pegar o id e dar um selec tno bd
+  let place;
+  //GET MONGO DB:
   try {
-    const update_place = await Place.updateOne({ _id: placeId }, teste);
-    res.status(200).json(update_place);
-  } catch (err) {
-    console.log(err);
+    place = await Place.findById(placeID);
+    Object.assign(place, req.body);
+    place.save();
+  } catch (error) {
+    console.log(error);
   }
+
+  res.json({ place: place.toObject({ getters: true }) });
 };
 
 //Delete:
