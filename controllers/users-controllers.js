@@ -6,18 +6,19 @@ const UserMongo = require('../models/Schemas/user');
 
 const HttpError = require('../models/http-error');
 
-const DUMMY_USERS = [
-  {
-    id: 'u1',
-    name: 'Max Schwarz',
-    email: 'test@test.com',
-    password: 'testers',
-  },
-];
-
 //GET ALL USERS
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+const getUsers = async (req, res, next) => {
+  let users;
+  try {
+    users = await UserMongo.find({}, '-password');
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching users failed, please try again later.',
+      500,
+    );
+    return next(error);
+  }
+  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 //CADASTRAR USUARIO
@@ -34,7 +35,8 @@ const signup = async (req, res, next) => {
   try {
     existingUser = await UserMongo.findOne({ email: email });
   } catch (err) {
-    console.log(err);
+    const error = new HttpError('Failed, try again', 500);
+    return next(error);
   }
   if (existingUser) {
     const error = new HttpError('User já existe', 422);
@@ -57,18 +59,25 @@ const signup = async (req, res, next) => {
   res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const identifiedUser = DUMMY_USERS.find((u) => u.email === email); //BUSCA O REGISTRO NO EMAIL INFORMADO
-  if (!identifiedUser || identifiedUser.password !== password) {
-    //SE A SENHA NAO BATER PARA O EMAIL INFORMADO, EXIBE O ERRO.
-    throw new HttpError(
-      'Could not identify user, credentials seem to be wrong.',
+  try {
+    existingUser = await UserMongo.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError(
+      'Loggin in failed, pleasse try again later',
+      500,
+    );
+    return next(error);
+  }
+  if (!existingUser || existingUser.password != password) {
+    const error = new HttpError(
+      'Invalid credentials, could not log you in',
       401,
     );
+    return next(error);
   }
-
   res.json({ message: 'Logged in!' });
 };
 

@@ -9,6 +9,9 @@ const placesControllers = require('../controllers/place-controllers');
 //GET PELO ID !
 router.get('/:places_id', placesControllers.getPlaceById);
 
+//GetAll
+router.get('/', placesControllers.getPlacesAll);
+
 //GET PELO ID DO USUARIO !
 router.get('/user/:user_id', placesControllers.getPlacesByUserId);
 
