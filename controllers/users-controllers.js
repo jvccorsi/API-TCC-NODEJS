@@ -1,6 +1,9 @@
 const uuid = require('uuid');
 const { validationResult } = require('express-validator');
 
+//Mongo:
+const UserMongo = require('../models/Schemas/user');
+
 const HttpError = require('../models/http-error');
 
 const DUMMY_USERS = [
@@ -18,28 +21,40 @@ const getUsers = (req, res, next) => {
 };
 
 //CADASTRAR USUARIO
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
   const errors = validationResult(req); //validação do express
   if (!errors.isEmpty()) {
-    throw new HttpError('Invalid input passed pleasse check your data', 422);
+    return next(
+      new HttpError('Invalid input passed pleasse check your data', 422),
+    );
   }
-  const { name, email, password } = req.body;
-
-  const hasUser = DUMMY_USERS.find((u) => u.email === email);
-  if (hasUser) {
-    throw new HttpError('Could not create user, email already exists.', 422);
+  //COMEÇO ->
+  const { name, email, password, places } = req.body;
+  let existingUser;
+  try {
+    existingUser = await UserMongo.findOne({ email: email });
+  } catch (err) {
+    console.log(err);
+  }
+  if (existingUser) {
+    const error = new HttpError('User já existe', 422);
+    return next(error);
   }
 
-  const createdUser = {
-    id: uuid.v4(),
-    name, // name: name
+  const createdUser = new UserMongo({
+    name,
     email,
     password,
-  };
+    places,
+  });
 
-  DUMMY_USERS.push(createdUser);
+  try {
+    await createdUser.save();
+  } catch (err) {
+    console.log(err);
+  }
 
-  res.status(201).json({ user: createdUser });
+  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
 const login = (req, res, next) => {

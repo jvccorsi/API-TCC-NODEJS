@@ -15,8 +15,12 @@ const getPlaceById = async (req, res, next) => {
   //GET MONGO DB:
   try {
     place = await Place.findById(placeID).exec();
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find a place.',
+      500,
+    );
+    return next(error);
   }
 
   if (!place || place.length === 0) {
@@ -37,7 +41,11 @@ const getPlacesByUserId = async (req, res, next) => {
   try {
     places = await Place.find({ creator: userID });
   } catch (err) {
-    console.log(err);
+    const error = new HttpError(
+      'Fetching places failed, please try again later',
+      500,
+    );
+    return next(error);
   }
 
   if (!places || places.length === 0) {
@@ -50,10 +58,12 @@ const getPlacesByUserId = async (req, res, next) => {
 };
 
 //POST place WITH MONGODB:
-const createPlace = async (req, res) => {
+const createPlace = async (req, res, next) => {
   const errors = validationResult(req); //validação do express
   if (!errors.isEmpty()) {
-    throw new HttpError('Invalid input passed pleasse check your data', 422);
+    return next(
+      new HttpError('Invalid input passed pleasse check your data', 422),
+    );
   }
   const { title, description, coordinates, address, creator } = req.body; //Puxar esses campos do body -> POST MONGO
   const createdPlace = new Place({
@@ -67,7 +77,11 @@ const createPlace = async (req, res) => {
   try {
     await createdPlace.save();
   } catch (err) {
-    console.log(err);
+    const error = new HttpError(
+      'Creating place failed, please try again.',
+      500,
+    );
+    return next(error);
   }
 
   res.status(201).json({ place: createdPlace });
@@ -75,7 +89,14 @@ const createPlace = async (req, res) => {
 
 //Update:
 
-const updatePlace = async (req, res) => {
+const updatePlace = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422),
+    );
+  }
+
   const placeID = req.params.places_id; //Vai puxar o ramatro PID da url para pegar o id e dar um selec tno bd
   let place;
   //GET MONGO DB:
@@ -83,8 +104,12 @@ const updatePlace = async (req, res) => {
     place = await Place.findById(placeID);
     Object.assign(place, req.body);
     place.save();
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not update place.',
+      500,
+    );
+    return next(error);
   }
 
   res.json({ place: place.toObject({ getters: true }) });
@@ -100,13 +125,21 @@ const deletePlace = async (req, res, next) => {
   try {
     place = await Place.findById(placeId);
   } catch (err) {
-    console.log(err);
+    const error = new HttpError(
+      'Something went wrong, could not delete place.',
+      500,
+    );
+    return next(error);
   }
 
   try {
     await place.remove();
   } catch (err) {
-    console.log(err);
+    const error = new HttpError(
+      'Something went wrong, could not delete place.',
+      500,
+    );
+    return next(error);
   }
   res.status(200).json({ message: 'Deleted place.' });
 };

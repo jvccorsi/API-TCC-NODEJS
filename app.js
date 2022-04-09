@@ -34,11 +34,11 @@ app.use((error, req, res, next) => {
 //Conexão mongo:
 mongoose
   .connect(
-    'mongodb+srv://jvccorsi:jvccorsi145@cluster0.u581t.mongodb.net/TccDatabase?retryWrites=true&w=majority',
+    'mongodb+srv://jvccorsi:jvccorsi145@tcc.rlst9.mongodb.net/DatabaseTcc?retryWrites=true&w=majority',
   )
   .then(() => {
     app.listen(5000);
   })
-  .catch((err) => {
-    console.log(err);
+  .catch((error) => {
+    console.log(error);
   });
