@@ -1,9 +1,10 @@
-const uuid = require('uuid');
+//Import Express
 const { validationResult } = require('express-validator');
 
 //Mongo:
 const UserMongo = require('../models/Schemas/user');
 
+//HTTPERROS
 const HttpError = require('../models/http-error');
 
 //GET ALL USERS
@@ -29,7 +30,7 @@ const signup = async (req, res, next) => {
       new HttpError('Invalid input passed pleasse check your data', 422),
     );
   }
-  //COMEÇO ->
+
   const { name, email, password } = req.body;
   let existingUser;
   try {
@@ -59,6 +60,8 @@ const signup = async (req, res, next) => {
   res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
+//LOGIN USER WITH EMAIL AND PASSWORD
+
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -81,6 +84,7 @@ const login = async (req, res, next) => {
   res.json({ message: 'Logged in!' });
 };
 
+//EXPORT FEATURES
 exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;

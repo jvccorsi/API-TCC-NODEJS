@@ -10,7 +10,8 @@ const { default: mongoose } = require('mongoose');
 //LOGICA PARA BUSCAR LUGARES PELO ID DO LUGAR
 const getPlaceById = async (req, res, next) => {
   //pid -> ID do place.
-  const placeID = req.params.places_id; //Vai puxar o ramatro PID da url para pegar o id e dar um selec tno bd
+  const placeID = req.params.places_id;
+  //Vai puxar o Parametro PID da url para pegar o id e dar um selec tno bd
 
   let place;
   //GET MONGO DB:
@@ -33,9 +34,9 @@ const getPlaceById = async (req, res, next) => {
   res.json({ place: place.toObject({ getters: true }) });
 };
 
-//LOGICA PARA BUSCAR LUGARES PELO USER ID
+//LOGICA PARA BUSCAR LUGARES DE ACORDO COM O USER ID
 const getPlacesByUserId = async (req, res, next) => {
-  const userID = req.params.user_id; //Vai puxar o parametro PID da url para pegar o id e dar um select no bd
+  const userID = req.params.user_id;
 
   let places;
   //SELECT NO MONGO BUSCANDO O ID DO USER
@@ -58,7 +59,7 @@ const getPlacesByUserId = async (req, res, next) => {
   }
 };
 
-//POST place WITH MONGODB:
+//POST PLACE COM MONGODB:
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req); //validação do express
   if (!errors.isEmpty()) {
@@ -87,7 +88,7 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError('Could not find user for provided id ', 404);
     return next(error);
   }
-  // console.log(user);
+
   try {
     const session_start = await mongoose.startSession();
     session_start.startTransaction();
@@ -106,8 +107,7 @@ const createPlace = async (req, res, next) => {
   res.status(201).json({ place: createdPlace });
 };
 
-//Update:
-
+//Update PLACE COM MONGODB:
 const updatePlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -116,7 +116,7 @@ const updatePlace = async (req, res, next) => {
     );
   }
 
-  const placeID = req.params.places_id; //Vai puxar o ramatro PID da url para pegar o id e dar um selec tno bd
+  const placeID = req.params.places_id;
   let place;
   //GET MONGO DB:
   try {
@@ -134,8 +134,7 @@ const updatePlace = async (req, res, next) => {
   res.json({ place: place.toObject({ getters: true }) });
 };
 
-//Delete:
-
+//Delete PLACE COM MONGO DB:
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.places_id;
 
@@ -143,7 +142,7 @@ const deletePlace = async (req, res, next) => {
 
   try {
     place = await Place.findById(placeId).populate('creator');
-    //Para remover um lugar e apagar ele do "creator" tbm
+    //Para remover um lugar e apagar ele do usuário com o id associado tbm
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not delete place.',
