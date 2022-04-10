@@ -1,10 +1,11 @@
 //Imports
 const HttpError = require('../models/http-error');
-const uuid = require('uuid');
 const { validationResult } = require('express-validator');
 
 //Importação schema mongo (Template place - Olhar o export):
 const Place = require('../models/Schemas/place');
+const User = require('../models/Schemas/user');
+const { default: mongoose } = require('mongoose');
 
 //LOGICA PARA BUSCAR LUGARES PELO ID DO LUGAR
 const getPlaceById = async (req, res, next) => {
@@ -74,8 +75,26 @@ const createPlace = async (req, res, next) => {
     creator,
   });
 
+  let user;
+
   try {
-    await createdPlace.save();
+    user = await User.findById(creator);
+  } catch (err) {
+    const error = new HttpError('Could not find user for provided id! .', 500);
+    return next(error);
+  }
+  if (!user) {
+    const error = new HttpError('Could not find user for provided id ', 404);
+    return next(error);
+  }
+  console.log(user);
+  try {
+    const session_start = await mongoose.startSession();
+    session_start.startTransaction();
+    await createdPlace.save({ session: session_start });
+    user.places.push(createdPlace);
+    await user.save({ session: session_start });
+    session_start.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       'Creating place failed, please try again.',

@@ -10,7 +10,7 @@ const HttpError = require('../models/http-error');
 const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await UserMongo.find({}, '-password');
+    users = await UserMongo.find({}, '-password'); //Tirar o password do get all
   } catch (err) {
     const error = new HttpError(
       'Fetching users failed, please try again later.',
@@ -30,7 +30,7 @@ const signup = async (req, res, next) => {
     );
   }
   //COMEÇO ->
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
   let existingUser;
   try {
     existingUser = await UserMongo.findOne({ email: email });
@@ -47,7 +47,7 @@ const signup = async (req, res, next) => {
     name,
     email,
     password,
-    places,
+    places: [],
   });
 
   try {

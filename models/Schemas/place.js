@@ -10,7 +10,7 @@ const placeSchema = new Schema({
     lat: { type: Number, required: true },
     long: { type: Number, required: true },
   },
-  creator: { type: String, required: true },
+  creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
 module.exports = mongoose.model('tcc_places', placeSchema);
