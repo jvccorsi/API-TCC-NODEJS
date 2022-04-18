@@ -94,13 +94,10 @@ const createPlace = async (req, res, next) => {
     session_start.startTransaction();
     await createdPlace.save({ session: session_start });
     user.places.push(createdPlace);
-    await user.save({ session: session_start });
+    await user.save({ session: session_start, validateModifiedOnly: true });
     session_start.commitTransaction();
   } catch (err) {
-    const error = new HttpError(
-      'Creating place failed, please try again.',
-      500,
-    );
+    const error = new HttpError('Não foi possivel realizar o cadastro', 404);
     return next(error);
   }
 
