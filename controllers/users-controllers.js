@@ -31,7 +31,7 @@ const signup = async (req, res, next) => {
     );
   }
 
-  const { name, email, password } = req.body;
+  const { name, email, password, lastName } = req.body;
   let existingUser;
   try {
     existingUser = await UserMongo.findOne({ email: email });
@@ -46,6 +46,7 @@ const signup = async (req, res, next) => {
 
   const createdUser = new UserMongo({
     name,
+    lastName,
     email,
     password,
     places: [],
