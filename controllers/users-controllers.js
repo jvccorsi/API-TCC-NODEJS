@@ -26,9 +26,7 @@ const getUsers = async (req, res, next) => {
 const signup = async (req, res, next) => {
   const errors = validationResult(req); //validação do express
   if (!errors.isEmpty()) {
-    return next(
-      new HttpError('Invalid input passed pleasse check your data', 422),
-    );
+    return next(new HttpError('Os dados informados estão incorretos', 422));
   }
 
   const { name, email, password, lastName } = req.body;
@@ -40,7 +38,10 @@ const signup = async (req, res, next) => {
     return next(error);
   }
   if (existingUser) {
-    const error = new HttpError('User já existe', 422);
+    const error = new HttpError(
+      'Usuário com o email informado já existe!',
+      422,
+    );
     return next(error);
   }
 
@@ -70,14 +71,14 @@ const login = async (req, res, next) => {
     existingUser = await UserMongo.findOne({ email: email });
   } catch (err) {
     const error = new HttpError(
-      'Loggin in failed, pleasse try again later',
+      'Não foi possível realizar o login, tente novamente mais tarde',
       500,
     );
     return next(error);
   }
   if (!existingUser || existingUser.password != password) {
     const error = new HttpError(
-      'Invalid credentials, could not log you in',
+      'Seu email ou senha está incorreto, tente novamente !',
       401,
     );
     return next(error);

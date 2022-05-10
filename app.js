@@ -53,7 +53,7 @@ mongoose
 
   .then(() => {
     app.listen(process.env.PORT || 3000, function () {
-      console.log('aa');
+      console.log('Server status: OK');
     });
   })
   .catch((error) => {

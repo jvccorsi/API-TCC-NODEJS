@@ -15,16 +15,16 @@ const getFichaById = async (req, res, next) => {
   try {
     ficha = await Ficha.findById(fichaID).exec();
   } catch (err) {
-    const error = new HttpError(
-      'Something went wrong, could not find a ficha.',
-      500,
-    );
+    const error = new HttpError('Não há nenhuma ficha com esse id ', 500);
     return next(error);
   }
 
   if (!ficha || ficha.length === 0) {
     return next(
-      new HttpError('Could not find a ficha for the provided !', 404),
+      new HttpError(
+        'Não foi possível encontrar uma ficha para o id fornecido !',
+        404,
+      ),
     );
   }
 
@@ -41,14 +41,19 @@ const getFichasByUserId = async (req, res, next) => {
     fichas = await Ficha.find({ creator: userID });
   } catch (err) {
     const error = new HttpError(
-      'Fetching fichas failed, please try again later',
+      'Erro ao realizar a busca, tente novamente depois',
       500,
     );
     return next(error);
   }
 
   if (!fichas || fichas.length === 0) {
-    next(new HttpError('Could not find a ficha for the provided !', 404));
+    next(
+      new HttpError(
+        'Não foi possível encontrar uma ficha para o id fornecido !',
+        404,
+      ),
+    );
   } else {
     res.json({
       fichas: fichas.map((ficha) => ficha.toObject({ getters: true })),
@@ -64,13 +69,27 @@ const createFicha = async (req, res, next) => {
       new HttpError('Invalid input passed pleasse check your data', 422),
     );
   }
-  const { title, description, coordinates, address, creator } = req.body; //Puxar esses campos do body -> POST MONGO
-  const createFicha = new Ficha({
-    title,
-    description,
-    address,
-    location: coordinates,
+  const {
     creator,
+    atendimento,
+    solicitante,
+    paciente,
+    agenteToxico,
+    exposicao,
+    outrasInformacoes,
+    acompanhamento,
+    classificacaoFinal,
+  } = req.body; //Puxar esses campos do body -> POST MONGO
+  const createFicha = new Ficha({
+    creator,
+    atendimento: atendimento, //É UM OBJETO !
+    solicitante: solicitante, //É UM OBJETO !
+    paciente: paciente, //É UM OBJETO !
+    agenteToxico: agenteToxico, //É UM OBJETO !
+    exposicao: exposicao, //É UM OBJETO !
+    outrasInformacoes: outrasInformacoes, //É UM OBJETO !
+    acompanhamento: acompanhamento, //É UM OBJETO !
+    classificacaoFinal: classificacaoFinal, //É UM OBJETO !
   });
 
   let user;
@@ -78,11 +97,17 @@ const createFicha = async (req, res, next) => {
   try {
     user = await User.findById(creator);
   } catch (err) {
-    const error = new HttpError('Could not find user for provided id! .', 500);
+    const error = new HttpError(
+      'Não foi possível encontrar uma ficha para o id fornecido !',
+      500,
+    );
     return next(error);
   }
   if (!user) {
-    const error = new HttpError('Could not find user for provided id ', 404);
+    const error = new HttpError(
+      'Não foi possível usuario com o id fornecido ',
+      404,
+    );
     return next(error);
   }
 
@@ -115,11 +140,13 @@ const updateFicha = async (req, res, next) => {
   //GET MONGO DB:
   try {
     ficha = await Ficha.findById(fichaID);
+
     Object.assign(ficha, req.body);
     ficha.save();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
-      'Something went wrong, could not update ficha.',
+      'Algo de errado aconteceu, não foi possível atualizar a ficha',
       500,
     );
     return next(error);
@@ -138,7 +165,7 @@ const deleteFicha = async (req, res, next) => {
     ficha = await Ficha.findById(fichaID).populate('creator');
   } catch (err) {
     const error = new HttpError(
-      'Something went wrong, could not delete ficha.',
+      'Algo de errado aconteceu, não foi possível deletar a ficha',
       500,
     );
     return next(error);
@@ -146,7 +173,7 @@ const deleteFicha = async (req, res, next) => {
 
   //Se não encontrar um lugar com o id indicado
   if (!ficha) {
-    const error = new HttpError('Could not find ficha for this id', 400);
+    const error = new HttpError('Não há ficha para o id fornecido', 400);
     return next(error);
   }
 
@@ -168,9 +195,22 @@ const deleteFicha = async (req, res, next) => {
   res.status(200).json({ message: 'Deleted ficha.' });
 };
 
+//GET ALL USERS
+const getAllFichas = async (req, res, next) => {
+  let ficha;
+  try {
+    ficha = await Ficha.find({}); //Tirar o password do get all
+  } catch (err) {
+    const error = new HttpError('Erro, tente novamente depois!', 500);
+    return next(error);
+  }
+  res.json({ ficha: ficha.map((ficha) => ficha.toObject({ getters: true })) });
+};
+
 //EXPORT DAS FEATURES
 exports.getFichaById = getFichaById;
 exports.getFichasByUserId = getFichasByUserId;
 exports.createFicha = createFicha;
 exports.updateFicha = updateFicha;
 exports.deleteFicha = deleteFicha;
+exports.getAllFichas = getAllFichas;
