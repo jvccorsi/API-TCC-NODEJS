@@ -1,7 +1,7 @@
 //IMPORTS:
 const express = require('express');
 const bodyParser = require('body-parser');
-const placeRouters = require('./routes/places-routes');
+const fichaRouters = require('./routes/fichasRouter');
 const userRoutes = require('./routes/users-routes');
 const app = express();
 const HttpError = require('./models/http-error');
@@ -19,15 +19,15 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   );
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
 
   next();
 });
 
-//routes place
-app.use('/api/places', placeRouters);
+//routes
+app.use('/api/fichas', fichaRouters);
 app.use('/api/users', userRoutes);
 
 //Erros para rotas não cadastradas !:

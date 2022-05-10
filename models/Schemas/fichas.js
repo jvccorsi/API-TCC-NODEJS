@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const placeSchema = new Schema({
+const fichaSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   address: { type: String, required: true },
@@ -13,4 +13,4 @@ const placeSchema = new Schema({
   creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
-module.exports = mongoose.model('tcc_places', placeSchema);
+module.exports = mongoose.model('tccFichas', fichaSchema);

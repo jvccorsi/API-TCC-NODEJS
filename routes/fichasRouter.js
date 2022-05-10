@@ -4,16 +4,13 @@ const router = express.Router();
 const validator = require('express-validator'); //VALIDATOR WITH EXPRESS (MAIS FACIL)
 
 //Export dos controllers (logica da rota)
-const placesControllers = require('../controllers/place-controllers');
+const fichasControllers = require('../controllers/fichaControllers');
 
 //GET PELO ID !
-router.get('/:places_id', placesControllers.getPlaceById);
-
-//GetAll
-router.get('/', placesControllers.getPlacesAll);
+router.get('/:fichaId', fichasControllers.getFichaById);
 
 //GET PELO ID DO USUARIO !
-router.get('/user/:user_id', placesControllers.getPlacesByUserId);
+router.get('/user/:user_id', fichasControllers.getFichasByUserId);
 
 //Post das coisas:
 router.post(
@@ -23,20 +20,20 @@ router.post(
     validator.check('description').isLength({ min: 5 }),
     validator.check('address').not().isEmpty(),
   ],
-  placesControllers.createPlace,
+  fichasControllers.createFicha,
 ); //Check verifica o campo "title" não está vazio (PK)
 
 //Update:
 router.patch(
-  '/:places_id',
+  '/:fichaId',
   [
     validator.check('title').not().isEmpty(),
     validator.check('description').isLength({ min: 5 }),
   ],
-  placesControllers.updatePlace,
+  fichasControllers.updateFicha,
 );
 
 //Delete:
-router.delete('/:places_id', placesControllers.deletePlace);
+router.delete('/:fichaId', fichasControllers.deleteFicha);
 
 module.exports = router;
