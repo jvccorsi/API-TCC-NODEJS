@@ -139,7 +139,6 @@ const deletePlace = async (req, res, next) => {
 
   try {
     place = await Place.findById(placeId).populate('creator');
-    //Para remover um lugar e apagar ele do usuário com o id associado tbm
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not delete place.',
@@ -158,10 +157,14 @@ const deletePlace = async (req, res, next) => {
     const session_start = await mongoose.startSession();
     session_start.startTransaction();
     await place.remove({ session: session_start });
-    place.creator.places.pull(place);
-    await place.creator.save({ session: session_start });
+    await place.creator.places.pull(place);
+    await place.creator.save({
+      session: session_start,
+      validateModifiedOnly: true,
+    });
     await session_start.commitTransaction();
   } catch (err) {
+    console.log(err);
     const error = new HttpError('Ocorreu algum erro na hora de deletar', 400);
     return next(error);
   }
