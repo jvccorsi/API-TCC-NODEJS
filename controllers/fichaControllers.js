@@ -10,16 +10,16 @@ const { default: mongoose } = require('mongoose');
 //LOGICA PARA BUSCAR fichas PELO ID DO LUGAR
 const getFichaById = async (req, res, next) => {
   const fichaID = req.params.fichaId;
-  let ficha;
+  let defaultValues;
   //GET MONGO DB:
   try {
-    ficha = await Ficha.findById(fichaID).exec();
+    defaultValues = await Ficha.findById(fichaID).exec();
   } catch (err) {
     const error = new HttpError('Não há nenhuma ficha com esse id ', 500);
     return next(error);
   }
 
-  if (!ficha || ficha.length === 0) {
+  if (!defaultValues || defaultValues.length === 0) {
     return next(
       new HttpError(
         'Não foi possível encontrar uma ficha para o id fornecido !',
@@ -28,7 +28,7 @@ const getFichaById = async (req, res, next) => {
     );
   }
 
-  res.json({ ficha: ficha.toObject({ getters: true }) });
+  res.json({ defaultValues: defaultValues.toObject({ getters: true }) });
 };
 
 //LOGICA PARA BUSCAR Fichas DE ACORDO COM O USER ID
@@ -199,7 +199,7 @@ const deleteFicha = async (req, res, next) => {
 const getAllFichas = async (req, res, next) => {
   let ficha;
   try {
-    ficha = await Ficha.find({}); //Tirar o password do get all
+    ficha = await Ficha.find({}).select({ atendimento: 1, paciente: 1 }); //Tirar o password do get all
   } catch (err) {
     const error = new HttpError('Erro, tente novamente depois!', 500);
     return next(error);
