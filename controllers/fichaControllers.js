@@ -27,7 +27,6 @@ const getFichaById = async (req, res, next) => {
       ),
     );
   }
-
   res.json({ defaultValues: defaultValues.toObject({ getters: true }) });
 };
 
@@ -195,16 +194,20 @@ const deleteFicha = async (req, res, next) => {
   res.status(200).json({ message: 'Deleted ficha.' });
 };
 
-//GET ALL USERS
+//GET ALL Fichas
 const getAllFichas = async (req, res, next) => {
   let ficha;
   try {
-    ficha = await Ficha.find({}).select({ atendimento: 1, paciente: 1 }); //Tirar o password do get all
+    ficha = await Ficha.find({}).select({
+      atendimento: 1,
+      paciente: 1,
+      solicitante: 1,
+    }); //Tirar o password do get all
   } catch (err) {
     const error = new HttpError('Erro, tente novamente depois!', 500);
     return next(error);
   }
-  res.json({ ficha: ficha.map((ficha) => ficha.toObject({ getters: true })) });
+  res.json(ficha);
 };
 
 //EXPORT DAS FEATURES
