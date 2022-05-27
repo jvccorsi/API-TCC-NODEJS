@@ -89,7 +89,30 @@ const login = async (req, res, next) => {
   });
 };
 
+const getUserId = async (req, res, next) => {
+  const userID = req.params.userId;
+  let valuesUser;
+  //GET MONGO DB:
+  try {
+    valuesUser = await UserMongo.findById(userID, '-password').exec();
+  } catch (err) {
+    const error = new HttpError('Não há nenhum usuário com esse id ', 500);
+    return next(error);
+  }
+
+  if (!valuesUser || valuesUser.length === 0) {
+    return next(
+      new HttpError(
+        'Não foi possível encontrar um usuário para o id fornecido !',
+        404,
+      ),
+    );
+  }
+  res.json(valuesUser);
+};
+
 //EXPORT FEATURES
 exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
+exports.getUserId = getUserId;

@@ -22,4 +22,6 @@ router.post(
 
 router.post('/login', usersController.login);
 
+router.get('/:userId', usersController.getUserId);
+
 module.exports = router;
