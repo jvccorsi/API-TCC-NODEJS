@@ -27,7 +27,7 @@ const getFichaById = async (req, res, next) => {
       ),
     );
   }
-  res.json({ defaultValues: defaultValues.toObject({ getters: true }) });
+  res.json(defaultValues);
 };
 
 //LOGICA PARA BUSCAR Fichas DE ACORDO COM O USER ID
