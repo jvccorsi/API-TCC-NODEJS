@@ -78,6 +78,9 @@ const createFicha = async (req, res, next) => {
     outrasInformacoes,
     acompanhamento,
     classificacaoFinal,
+    exame,
+    updateby,
+    atendimentoStatus,
   } = req.body; //Puxar esses campos do body -> POST MONGO
   const createFicha = new Ficha({
     creator,
@@ -89,6 +92,9 @@ const createFicha = async (req, res, next) => {
     outrasInformacoes: outrasInformacoes, //É UM OBJETO !
     acompanhamento: acompanhamento, //É UM OBJETO !
     classificacaoFinal: classificacaoFinal, //É UM OBJETO !
+    exame: exame,
+    updateby: updateby,
+    atendimentoStatus: atendimentoStatus,
   });
 
   let user;

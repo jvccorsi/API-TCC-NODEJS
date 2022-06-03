@@ -59,27 +59,15 @@ const fichaSchema = new Schema({
   },
 
   agenteToxico: {
-    agente1: {
-      nome: { type: String },
-      substancia_Genero: { type: String },
-      subclasse: { type: String },
-      classe: { type: String },
-      grupo: { type: String },
-    },
-    agente2: {
-      nome: { type: String },
-      substancia_Genero: { type: String },
-      subclasse: { type: String },
-      classe: { type: String },
-      grupo: { type: String },
-    },
-    agente3: {
-      nome: { type: String },
-      substancia_Genero: { type: String },
-      subclasse: { type: String },
-      classe: { type: String },
-      grupo: { type: String },
-    },
+    dados: [
+      {
+        nome: { type: String },
+        substancia_Genero: { type: String },
+        subclasse: { type: String },
+        classe: { type: String },
+        grupo: { type: String },
+      },
+    ],
     dados_complementares: { type: String },
     quantidade_apresentacao: { type: String },
     dose: { type: String },
@@ -155,9 +143,16 @@ const fichaSchema = new Schema({
     resultado_autopsia: { type: String },
     contribuicao_obito: { type: String },
   },
-
-  // title: { type: String, required: true },
-
+  exame: {
+    dados: [
+      {
+        nomeExame: { type: String },
+        resultadoExame: { type: String },
+      },
+    ],
+  },
+  atendimentoStatus: { type: String },
+  updateby: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
   creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
