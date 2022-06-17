@@ -152,7 +152,7 @@ const fichaSchema = new Schema({
     ],
   },
   atendimentoStatus: { type: String },
-  updateby: { type: mongoose.Types.ObjectId, ref: 'User' },
+  updateby: { type: String },
   creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
