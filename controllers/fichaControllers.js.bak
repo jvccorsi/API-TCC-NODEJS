@@ -10,16 +10,16 @@ const { default: mongoose } = require('mongoose');
 //LOGICA PARA BUSCAR fichas PELO ID DO LUGAR
 const getFichaById = async (req, res, next) => {
   const fichaID = req.params.fichaId;
-  let defaultValues;
+  let ficha;
   //GET MONGO DB:
   try {
-    defaultValues = await Ficha.findById(fichaID).exec();
+    ficha = await Ficha.findById(fichaID).exec();
   } catch (err) {
     const error = new HttpError('Não há nenhuma ficha com esse id ', 500);
     return next(error);
   }
 
-  if (!defaultValues || defaultValues.length === 0) {
+  if (!ficha || ficha.length === 0) {
     return next(
       new HttpError(
         'Não foi possível encontrar uma ficha para o id fornecido !',
@@ -27,7 +27,8 @@ const getFichaById = async (req, res, next) => {
       ),
     );
   }
-  res.json(defaultValues);
+
+  res.json({ ficha: ficha.toObject({ getters: true }) });
 };
 
 //LOGICA PARA BUSCAR Fichas DE ACORDO COM O USER ID
@@ -78,9 +79,6 @@ const createFicha = async (req, res, next) => {
     outrasInformacoes,
     acompanhamento,
     classificacaoFinal,
-    exame,
-    updateby,
-    atendimentoStatus,
   } = req.body; //Puxar esses campos do body -> POST MONGO
   const createFicha = new Ficha({
     creator,
@@ -92,9 +90,6 @@ const createFicha = async (req, res, next) => {
     outrasInformacoes: outrasInformacoes, //É UM OBJETO !
     acompanhamento: acompanhamento, //É UM OBJETO !
     classificacaoFinal: classificacaoFinal, //É UM OBJETO !
-    exame: exame,
-    updateby: updateby,
-    atendimentoStatus: atendimentoStatus,
   });
 
   let user;
@@ -145,7 +140,7 @@ const updateFicha = async (req, res, next) => {
   //GET MONGO DB:
   try {
     ficha = await Ficha.findById(fichaID);
-
+    console.log(ficha);
     Object.assign(ficha, req.body);
     ficha.save();
   } catch (err) {
@@ -200,21 +195,16 @@ const deleteFicha = async (req, res, next) => {
   res.status(200).json({ message: 'Deleted ficha.' });
 };
 
-//GET ALL Fichas
+//GET ALL USERS
 const getAllFichas = async (req, res, next) => {
   let ficha;
   try {
-    ficha = await Ficha.find({}).select({
-      atendimento: 1,
-      paciente: 1,
-      solicitante: 1,
-      atendimentoStatus: 1,
-    }); //Tirar o password do get all
+    ficha = await Ficha.find({}); //Tirar o password do get all
   } catch (err) {
     const error = new HttpError('Erro, tente novamente depois!', 500);
     return next(error);
   }
-  res.json(ficha);
+  res.json({ ficha: ficha.map((ficha) => ficha.toObject({ getters: true })) });
 };
 
 //EXPORT DAS FEATURES

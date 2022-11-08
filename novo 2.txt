@@ -1,0 +1,80 @@
+
+----------------- NO SQL e MONGO DB----------------------
+
+TCC_RodrigoSantos:
+
+DEFINICAO:
+
+MongoDB [14] é um banco de dados no estilo NoSQL, onde os dados são
+armazenados como objetos no formato JSON (JavaScript Object Notation), chamados
+“documentos”, em tabelas que são chamadas de “coleções” - diferentemente do banco de
+dados de modelo relacional, em que usamos linhas, colunas e tabelas. É conhecido por
+ser um banco de dados não-relacional, isto é, não é possível fazer links entre documentos. 
+
+
+
+Principal característica:
+-	Escalabilidade horizontal – é a necessidade do banco de dados ser adaptável,
+aumentando o próprio tamanho de acordo com o que os usuários da aplicação
+adicionam de informação. Também envolve a carga em servidores (aumentando
+a capacidade de acordo com o uso);
+
+-	Indexação – assim como em banco de dados relacionais, o MongoDB tem índices
+para facilitar as pesquisas no banco. Ao criar um documento em uma coleção, é
+criado uma outra estrutura que contém o valor do campo e o ponteiro para o
+documento criado.
+
+
+
+interfacetecnologica:
+
+DEF:
+
+-	MongoDB é um SGBD NoSQL, esse termo NoSQL é o nome que se dá aos bancos de  dados  que  não  se  fundamental  no  
+modelo  relacional.  Os  bancos  de  dados,  NoSQL,  
+não fazem uso de tabelas com colunas e linhas para o armazenamento dos dados. 
+Eles por sua vez implementa diferentes modelos.
+O termo NoSQL(Not Only SQL) se popularizou nacomunidade e tem por definição a não presença do SQL.
+
+VANTAGENS:
+
+- 	O  MongoDB  tem  uma  melhor  performance,  tendo  em  vista  que  uma  única  consulta retorna tudo o que 
+for preciso saber sobre o documento. Esse SGBD apresenta vantagens de escalabilidade, 
+manipulação da quantidade massiva dos dados, flexibilidade e facilidade para consultas.
+
+- 	Segundo  Higor (2014),O  escalonamento  horizontal  com  Sharding  é  muito 
+ bem implementado  noMongoDB.  Sharding  é  utilizado  quando  temos  muitos dados  e 
+ estamos  no limite do disco, dessa forma dividimos esses dados entre várias máquinas, 
+ assim temos mais rendimento  e  maior  capacidade  de  armazenamento  em  disco.  
+ Portanto,  quanto  mais  Shards maior será o armazenamento e o desempenho.
+
+
+----------------- MONGOOSEE----------------------
+
+TCC_RodrigoSantos:
+
+DEFINICAO:
+
+Mongoose é uma biblioteca para modelagem de objetos para o MongoDB [10].
+Gerencia relacionamento entre dados, validação de esquemas, e traduz objetos do código
+para serem usados pelo MongoDB. Tem como objetivo ser um facilitador nas operações 
+de criação, leitura, edição e remoção de dados, além de ajudar na modelagem do banco e
+criar esquemas.
+
+Ao criar um esquema, é possível definir um tipo, valores iniciais, formatação dos
+valores inseridos no banco de dados, validadores, dentre outras propriedades. Também é
+possível definir o tipo de um item como um ObjectID, significando que seu valor é o id
+de um documento em uma outra coleção.
+Modelos são construtores baseados em esquemas definidos na aplicação. São
+responsáveis pela criação, visualização, edição e remoção de dados. Ao criar um modelo,
+é preciso identificar o nome da coleção e o esquema na qual aquela coleção é definida. A
+partir disso, o Mongoose faz uma cópia do esquema e procura pela versão da coleção no
+banco de dados.
+
+
+
+
+
+
+
+
